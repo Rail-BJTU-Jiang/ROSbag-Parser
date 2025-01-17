@@ -29,7 +29,7 @@ def save_image(msg, folder, count):
     # save msg as png file, name is 05d format
     cv2.imwrite(folder + "/" + '{:05d}'.format(count) + ".png", cv_image)
 
-def save_pcd(msg, folder, count):
+def save_pcd(msg, folder, count, surffix = "txt"):
     # msg type is sensor_msgs/PointCloud2
     pc = pc2.read_points(msg)
     pc_list = []
@@ -39,8 +39,11 @@ def save_pcd(msg, folder, count):
     pc_np = pc_np.astype(np.float32)
     pc_np = pc_np.reshape(-1, 4)
     # save msg as txt file
-    np.savetxt(folder + "/" + '{:05d}'.format(count) + ".txt", pc_np)
-
+    if surffix == "txt":
+        np.savetxt(folder + "/" + '{:05d}'.format(count) + ".txt", pc_np)
+    elif surffix == "bin":
+        # save as 4xN float64 binary file, this is the KITTI format as described here: https://blog.csdn.net/jerry99s/article/details/96631827
+        pc_np.astype(np.float64).tofile(folder + "/" + '{:05d}'.format(count) + ".bin")
 
 def save_timestamps(timestamps, folder, name = 'image'):
     with open(folder + "/{}_timestamps.txt".format(name), "w") as f:
@@ -80,7 +83,7 @@ def extract_bag():
             # rospy.loginfo("lidar: {}".format(t.to_sec()))
             # rospy.loginfo("lidar msg: {}".format(msg.header.stamp.to_sec()))
             # rospy.loginfo("lidar frame_id: {}".format(msg.header.seq))
-            save_pcd(msg, folder, lidar_count)
+            save_pcd(msg, folder, lidar_count, surffix = "bin")
             # lidartimestamps.append(msg.header.stamp.to_sec())
             lidartimestamps.append(t.to_sec())
             lidar_count+=1
