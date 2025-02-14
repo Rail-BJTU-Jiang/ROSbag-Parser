@@ -42,3 +42,7 @@ for topic, msg, t in bag.read_messages(topics=["/camera/color/image_raw", "/livo
             lidar_count+=1
 ```
 change the topics listed here according to your needs.
+
+
+# matlab calibration parameters exporter to opencv yaml file
+Each time after the calibration and exporting the parameters to the Matlab workspace, run `export_stereo_to_yaml(stereoParams)` or `export_to_yaml(cameraParams)` to generate a yaml file called `calibration.yaml` that contains the calibration results and can be directly loaded by opencv.
